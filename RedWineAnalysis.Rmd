@@ -1,0 +1,59 @@
+---
+title: "RedWineAnalysis"
+output: html_document
+---
+
+Which Chemical Properties influence the quality of red wines?
+
+```{r redwines}
+setwd('C:/Users/Pyrite^3/Desktop/Data Analysist/RedWineData')
+redwines <- read.csv('wineQualityReds.csv')
+```
+
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+ggpairs(redwines, 
+        lower = list(continuous = wrap("points", shape = I('.'))), 
+        upper = list(combo = wrap("box", outlier.shape = I('.'))))
+```
+
+
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+ggplot(aes(x=quality, y = pH), data = redwines) +
+  geom_point()
+```
+
+
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+
+ggplot(aes(x = fixed.acidity, y = density), data = redwines) + 
+  geom_point(alpha = 0.5, size = 1, color = redwines$quality) +
+  ggtitle('Price (log10) by Cube-Root of Carat and Color')
+
+```
+
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+ggplot(aes(x=quality, y = volatile.acidity), data = redwines) +
+  geom_point()
+```
+
+High amounts of acidic acid can lead to a vinegar taste in the wine (unpleasant). The thought is that higher volatile acidity leads to lower quality.
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+ggplot(aes(x=quality, y = residual.sugar), data = subset(redwines, residual.sugar <= 1)) +
+  geom_point()
+```
+
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+ggplot(aes(x=density, y = quality), data = redwines) +
+  geom_point()
+```
+
+
+** Do a graph of pH vs fixed acidity, volatile acidity, citric acid, and sulphur dioxide?
+
+** Which acids vs pH have the greatest effect on quality?

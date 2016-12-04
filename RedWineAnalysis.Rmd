@@ -8,7 +8,7 @@ Which Chemical Properties influence the quality of red wines?
 * Wine quality is rated from 1-10. For the purpose of this dataset all wines rated 6 and above are considered 'high quality wines' whereas 5 and below are considered 'low quality wines'.
 
 # Load the Database
-```{r redwines}
+```{r echo=FALSE, message=FALSE, warning=FALSE}
 setwd('C:/Users/Pyrite^3/Desktop/Data Analysist/RedWineData')
 redwines <- read.csv('wineQualityReds.csv')
 library(ggplot2)
@@ -81,7 +81,10 @@ ggplot(aes(x = quality), data = redwines.alc_va_median) +
                       labels = c('Low', 'High')) +
   ggtitle('Wine Quality: High Alcohol and Low Volatile Acids')
 
+# Percent wines with HIGH 'alcohol' and LOW 'volatile.acidity'
 sum(redwines.alc_va_median$quality >= '3')  / sum(redwines$quality >= '3')
+
+# Percent HIGH 'quality' wines with HIGH 'alcohol' and LOW 'volatile.acidity'
 sum(redwines.alc_va_median$quality >= '6') / sum(redwines.alc_va_median$quality >= '3')
 ```
 
@@ -119,7 +122,10 @@ p2 <- ggplot(aes(x = quality), data = redwines.filter_density) +
 
 grid.arrange(p1,p2)
 
+# Percent wines with 'density' filter
 sum(redwines.filter_density$quality >= '3') / sum(redwines$quality >= '3')
+
+# Percent HIGH 'quality' wines with 'density' filter
 sum(redwines.filter_density$quality >= '6') / sum(redwines.filter_density$quality >= '3')
 ```
 
@@ -144,7 +150,10 @@ ggplot(aes(x = quality), data = redwines.alc_va_median_filter_density) +
   ggtitle('Wine Quality: High Alcohol, Low Volatile Acids, and Density Filter') +
   scale_x_continuous(breaks=seq(3,8))
 
+# Percent wines with HIGH 'alcohol', LOW 'volatile.acidity', and density filter
 sum(redwines.alc_va_median_filter_density$quality >= '3') / sum(redwines$quality >= '3')
+
+# Percent HIGH 'quality' wines with HIGH 'alcohol', LOW 'volatile.acidity', and density filter
 sum(redwines.alc_va_median_filter_density$quality >= '6') / sum(redwines.alc_va_median_filter_density$quality >= '3')
 ```
 

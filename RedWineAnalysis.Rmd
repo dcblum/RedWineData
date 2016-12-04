@@ -5,55 +5,125 @@ output: html_document
 
 Which Chemical Properties influence the quality of red wines?
 
+* Wines were tasted and given a scale of 0-10. For the purpose of this dataset all wines rated 6 and above are labeled as 'high quality wines'.
+
+# Load the Database
 ```{r redwines}
 setwd('C:/Users/Pyrite^3/Desktop/Data Analysist/RedWineData')
 redwines <- read.csv('wineQualityReds.csv')
+library(ggplot2)
+library(GGally)
+library(plyr)
 ```
 
+# Histogram of quality
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+ggplot(aes(x = quality), data = redwines) +
+  geom_histogram(bins = 6, color = 'black', aes(fill = cut(quality, c(2,5,8)))) +
+  scale_x_continuous(label = seq(3,8), breaks = seq(3,8)) +
+  scale_fill_manual(name = 'quality',
+                      values = c('(2,5]' = 'skyblue',
+                                 '(5,8]' = 'maroon'),
+                      labels = c('lower quality', 'higher quality'))
 
+```
+
+# Two plot graphs of every variable
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
 ggpairs(redwines, 
         lower = list(continuous = wrap("points", shape = I('.'))), 
         upper = list(combo = wrap("box", outlier.shape = I('.'))))
 ```
 
+Taking a look through the data it appears both 'alcohol' and 'volatile.acidity' have the most significant correlation coefficients at 0.476 and -0.391 respectively. Although neither of these are very strong, they may be indicators of what typically lead to higher quality wines.
 
+Let's take a further look into both alcohol and volatile.acidity:
 
+# Graph alcohol vs quality
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
-ggplot(aes(x=quality, y = pH), data = redwines) +
-  geom_point()
+ggplot(aes(x = quality, y = alcohol), data = redwines) +
+  geom_point(alpha = 1/2, aes(color = quality)) +
+  geom_line(stat = 'summary', fun.y = median, size = 1, linetype = 2) + 
+  scale_color_gradient(low = 'skyblue', high = 'maroon')
+```
+
+The dashed line is median alcohol for the different qualities. Although there is a dip of median alcohol in quality 5 wines the overall trend is higher alcohol leads to higher quality. Alcohol appears to have a positive correlation with quality.
+
+Note that quality 8 wines are in the upper range of alcohol (between ~10 and ~14) whereas quality 3 wines are in the lower range (between ~8 and ~11) of alcohol. 
+
+
+# Graph volatile.acidity vs quality
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+ggplot(aes(x = quality, y = volatile.acidity), data = redwines) +
+  geom_point(alpha = 1/2, aes(color = quality)) +
+  geom_line(stat = 'summary', fun.y = median, size = 1.5, linetype = 2) + 
+  scale_color_gradient(low = 'skyblue', high = 'maroon')
+```
+
+Again, the median values for quality are represented by a dashed line. The median value for volatile acidity tends to steadily decrease with higher quality wines. The median line indicates volatile acidity has negative correlation versus quality.
+
+Quality 8 wines are in the lower range of volatile acidity (between ~.25 to ~.85) whereas quality 3 wines are in the upper range of volatile acidity (between ~.44 to ~1.6). 
+
+
+# Find percent values of good wines with filtered alcohol and volatile acidity
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+redwines.alc_va_median <- subset(redwines, alcohol >= median(alcohol) & volatile.acidity <= median(volatile.acidity) )
+
+ggplot(aes(x = quality), data = redwines.alc_va_median) +
+  geom_histogram(bins = 5, color = 'black', aes(fill = cut(quality, c(2,5,8)))) +
+  scale_fill_manual(name = 'quality',
+                      values = c('(2,5]' = 'skyblue',
+                                 '(5,8]' = 'maroon'),
+                      labels = c('lower quality', 'higher quality'))
+
+sum(redwines.alc_va_median$quality >= '3')  / sum(redwines$quality >= '3')
+sum(redwines.alc_va_median$quality >= '6') / sum(redwines.alc_va_median$quality >= '3')
+```
+
+Because high alcohol and low volatile acidity appear to influence quality, the dataset was filtered based on median. The following histogram only includes wine with above median alcohol values and below median volatile acidity values.
+
+Something to note is there are significantly more higher quality wines than lower quality wines. Also, this filter has no quality 3 wines. 
+
+
+
+
+# Additional look into Density
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+ggplot(aes(x = quality, y = density), data = redwines) +
+  geom_point(alpha = 1/2, aes(color = quality)) +
+  geom_hline(yintercept = quantile(redwines$density, .25)) +
+  geom_hline(yintercept = quantile(redwines$density, .75)) + 
+  scale_color_gradient(low = 'skyblue', high = 'maroon') +
+  scale_x_discrete(limits=c(seq(3,8)))
+
+redwines.filter_density <- subset(redwines, density <= quantile(redwines$density, .25) | density >= quantile(redwines$density, .75))
+
+sum(redwines.filter_density$quality >= '3') / sum(redwines$quality >= '3')
+sum(redwines.filter_density$quality >= '6') / sum(redwines.filter_density$quality >= '3')
+```
+
+A first look at density vs. quality showcases a graph with a very low correlation coefficient of -0.175 and values that appear to range all over the board. However, it is interesting to note that values that differentiate more from the median tend to be rated as a higer quality. 
+
+
+# Combine Density filter into alcohol and volatile.acidity median
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+redwines.alc_va_median_filter_density <- subset(redwines.alc_va_median, density <= quantile(redwines$density, .25) | density >= quantile(redwines$density, .75))
+
+ggplot(aes(x = quality), data = redwines.alc_va_median_filter_density) +
+  geom_histogram(bins = 5, color = 'black', aes(fill = cut(quality, c(2,5,8)))) +
+  scale_fill_manual(name = 'quality',
+                      values = c('(2,5]' = 'skyblue',
+                                 '(5,8]' = 'maroon'),
+                      labels = c('lower quality', 'higher quality'))
+
+sum(redwines.alc_va_median_filter_density$quality >= '3') / sum(redwines$quality >= '3')
+sum(redwines.alc_va_median_filter_density$quality >= '6') / sum(redwines.alc_va_median_filter_density$quality >= '3')
 ```
 
 
 
-```{r echo=FALSE, message=FALSE, warning=FALSE}
-
-ggplot(aes(x = fixed.acidity, y = density), data = redwines) + 
-  geom_point(alpha = 0.5, size = 1, color = redwines$quality) +
-  ggtitle('Price (log10) by Cube-Root of Carat and Color')
 
 ```
 
 
-```{r echo=FALSE, message=FALSE, warning=FALSE}
-ggplot(aes(x=quality, y = volatile.acidity), data = redwines) +
-  geom_point()
-```
 
-High amounts of acidic acid can lead to a vinegar taste in the wine (unpleasant). The thought is that higher volatile acidity leads to lower quality.
-
-```{r echo=FALSE, message=FALSE, warning=FALSE}
-ggplot(aes(x=quality, y = residual.sugar), data = subset(redwines, residual.sugar <= 1)) +
-  geom_point()
-```
-
-
-```{r echo=FALSE, message=FALSE, warning=FALSE}
-ggplot(aes(x=density, y = quality), data = redwines) +
-  geom_point()
-```
-
-
-** Do a graph of pH vs fixed acidity, volatile acidity, citric acid, and sulphur dioxide?
-
-** Which acids vs pH have the greatest effect on quality?

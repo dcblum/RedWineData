@@ -15,6 +15,7 @@ library(GGally)
 library(plyr)
 library(gridExtra)
 library(grid)
+library(psych)
 ```
 
 # Histogram of 'quality'
@@ -32,31 +33,46 @@ ggplot(aes(x = quality), data = redwines) +
 
 Approximately equal amounts of both high and low quality wines are in the dataset. A significant portion of wines are either a 5 or 6. There are no wines rated below 3 or above 8 with very few wines actually being given a 3 or 8 rating.
 
-# All variable versus 'quality'
+# All variables versus 'quality'
+```{r echo=FALSE, message=FALSE, warning=FALSE, include=FALSE, fig.height=14}
+all_plots <- ggpairs(redwines, 
+        lower = list(continuous = wrap("points", shape = I('.'))), 
+        upper = list(combo = wrap("box", outlier.shape = I('.'))))
+
+p.fixed.acidity <- grid.arrange(getPlot(all_plots, 2, 13), getPlot(all_plots, 13, 2), top=textGrob('          fixed.acidity', gp=gpar(fontsize=11)))
+p.volatile.acidity <- grid.arrange(getPlot(all_plots, 3, 13), getPlot(all_plots, 13, 3), top=textGrob('         volatile.acidity', gp=gpar(fontsize=11)))
+p.citric.acid <- grid.arrange(getPlot(all_plots, 4, 13), getPlot(all_plots, 13, 4), top=textGrob('        citric.acid', gp=gpar(fontsize=11)))
+p.residual.sugar<- grid.arrange(getPlot(all_plots, 5, 13), getPlot(all_plots, 13, 5), top=textGrob('         residual.sugar', gp=gpar(fontsize=11)))
+p.chlorides <- grid.arrange(getPlot(all_plots, 6, 13), getPlot(all_plots, 13, 6), top=textGrob('         chlorides', gp=gpar(fontsize=11)))
+p.free.sulfur.dioxide <- grid.arrange(getPlot(all_plots, 7, 13), getPlot(all_plots, 13, 7), top=textGrob('         free.sulfur.dioxide', gp=gpar(fontsize=11)))
+p.total.sulfur.dioxide <- grid.arrange(getPlot(all_plots, 8, 13), getPlot(all_plots, 13, 8), top=textGrob('         total.sulfur.dioxide', gp=gpar(fontsize=11)))
+p.density <- grid.arrange(getPlot(all_plots, 9, 13), getPlot(all_plots, 13, 9), top=textGrob('         density', gp=gpar(fontsize=11)))
+p.pH <- grid.arrange(getPlot(all_plots, 10, 13), getPlot(all_plots, 13, 10), top=textGrob('         pH', gp=gpar(fontsize=11)))
+p.sulphates <- grid.arrange(getPlot(all_plots, 11, 13), getPlot(all_plots, 13, 11), top=textGrob('         sulphates', gp=gpar(fontsize=11)))
+p.alcohol <- grid.arrange(getPlot(all_plots, 12, 13), getPlot(all_plots, 13, 12), top=textGrob('         alcohol', gp=gpar(fontsize=11)))
+```
+
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
-all_plots <- ggpairs(redwines)
+grid.arrange(p.fixed.acidity, p.volatile.acidity, p.citric.acid, p.residual.sugar, p.chlorides, p.free.sulfur.dioxide, p.total.sulfur.dioxide, p.density, p.pH, p.sulphates, p.alcohol, nrow = 4)
+```
 
-p.fixed.acidity <- grid.arrange(getPlot(all_plots, 2, 13), getPlot(all_plots, 13, 2), top=textGrob('fixed.acidity', gp=gpar(fontsize=11)))
-p.volatile.acidity <- grid.arrange(getPlot(all_plots, 3, 13), getPlot(all_plots, 13, 3), top=textGrob('volatile.acidity', gp=gpar(fontsize=11)))
-p.citric.acid <- grid.arrange(getPlot(all_plots, 4, 13), getPlot(all_plots, 13, 4), top=textGrob('citric.acid', gp=gpar(fontsize=11)))
-p.residual.sugar<- grid.arrange(getPlot(all_plots, 5, 13), getPlot(all_plots, 13, 5), top=textGrob('residual.sugar', gp=gpar(fontsize=11)))
-p.chlorides <- grid.arrange(getPlot(all_plots, 6, 13), getPlot(all_plots, 13, 6), top=textGrob('chlorides', gp=gpar(fontsize=11)))
-p.free.sulfur.dioxide <- grid.arrange(getPlot(all_plots, 7, 13), getPlot(all_plots, 13, 7), top=textGrob('free.sulfur.dioxide', gp=gpar(fontsize=11)))
-p.total.sulfur.dioxide <- grid.arrange(getPlot(all_plots, 8, 13), getPlot(all_plots, 13, 8), top=textGrob('total.sulfur.dioxide', gp=gpar(fontsize=11)))
-p.density <- grid.arrange(getPlot(all_plots, 9, 13), getPlot(all_plots, 13, 9), top=textGrob('density', gp=gpar(fontsize=11)))
-p.pH <- grid.arrange(getPlot(all_plots, 10, 13), getPlot(all_plots, 13, 10), top=textGrob('pH', gp=gpar(fontsize=11)))
-p.sulphates <- grid.arrange(getPlot(all_plots, 11, 13), getPlot(all_plots, 13, 11), top=textGrob('sulphates', gp=gpar(fontsize=11)))
-p.alcohol <- grid.arrange(getPlot(all_plots, 12, 13), getPlot(all_plots, 13, 12), top=textGrob('alcohol', gp=gpar(fontsize=11)))
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+pairs.panels(redwines[2:13])
+```
 
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+#top <- list(getPlot(all_plots, 2, 13), getPlot(all_plots, 3, 13), getPlot(all_plots, 4, 13), getPlot(all_plots, 5, 13), getPlot(all_plots, 6, 13), getPlot(all_plots, 7, 13), getPlot(all_plots, 8, 13), getPlot(all_plots, 9, 13), getPlot(all_plots, 10, 13), getPlot(all_plots, 11, 13), getPlot(all_plots, 12, 13))
 
-grid.arrange(p.fixed.acidity, p.volatile.acidity, p.citric.acid, p.residual.sugar, p.chlorides, p.free.sulfur.dioxide, p.total.sulfur.dioxide, p.density, p.pH, p.sulphates, p.alcohol, ncol = 4)
+#bottom <- list(getPlot(all_plots, 13, 2), getPlot(all_plots, 13, 3), getPlot(all_plots, 13, 4), getPlot(all_plots, 13, 5), getPlot(all_plots, 13, 6), getPlot(all_plots, 13, 7), getPlot(all_plots, 13, 8), getPlot(all_plots, 13, 9), getPlot(all_plots, 13, 10), getPlot(all_plots, 13, 11), getPlot(all_plots, 13, 12))
+
+grid.arrange(getPlot(all_plots, 2, 13), getPlot(all_plots, 3, 13), getPlot(all_plots, 4, 13), getPlot(all_plots, 5, 13), getPlot(all_plots, 6, 13), getPlot(all_plots, 7, 13), getPlot(all_plots, 8, 13), getPlot(all_plots, 9, 13), getPlot(all_plots, 10, 13), getPlot(all_plots, 11, 13), getPlot(all_plots, 12, 13), getPlot(all_plots, 13, 2), getPlot(all_plots, 13, 3), getPlot(all_plots, 13, 4), getPlot(all_plots, 13, 5), getPlot(all_plots, 13, 6), getPlot(all_plots, 13, 7), getPlot(all_plots, 13, 8), getPlot(all_plots, 13, 9), getPlot(all_plots, 13, 10), getPlot(all_plots, 13, 11), getPlot(all_plots, 13, 12),  nrow = 2)
 ```
 
 Taking a look through the data it appears both 'alcohol' and 'volatile.acidity' have the most significant correlation coefficients at 0.476 and -0.391 respectively. Although neither of these are very strong, they may be indicators of what typically lead to higher quality wines.
 
 Let's take a further look into both 'alcohol' and 'volatile.acidity':
 
-# Graph 'alcohol' vs 'quality'
+# Closer Look: 'alcohol' vs 'quality'
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
 ggplot(aes(x = quality, y = alcohol), data = redwines) +
   geom_point(alpha = 1/2, aes(color = quality)) +
@@ -69,7 +85,7 @@ The dashed line is median 'alcohol' for the different qualities. Although there 
 Note that quality 8 wines are in the upper range of 'alcohol' (between ~10 and ~14) whereas quality 3 wines are in the lower range (between ~8 and ~11) of 'alcohol'. 
 
 
-# Graph 'volatile.acidity' vs 'quality'
+# Closer Look: 'volatile.acidity' vs 'quality'
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
 ggplot(aes(x = quality, y = volatile.acidity), data = redwines) +
   geom_point(alpha = 1/2, aes(color = quality)) +
@@ -185,7 +201,9 @@ sum(redwines.alc_va_median_filter_density$quality >= '6') / sum(redwines.alc_va_
 ```
 Wines that have high alcohol content, low volatile acidity, and contain densities far from the median make up ~ 1/5 of the dataset and have an 86% chance to be rated as a high quality wine.
 
+# Final Plots and Summary
 
 
+# Reflection
 
 

@@ -34,38 +34,10 @@ ggplot(aes(x = quality), data = redwines) +
 Approximately equal amounts of both high and low quality wines are in the dataset. A significant portion of wines are either a 5 or 6. There are no wines rated below 3 or above 8 with very few wines actually being given a 3 or 8 rating.
 
 # All variables versus 'quality'
-```{r echo=FALSE, message=FALSE, warning=FALSE, include=FALSE, fig.height=14}
-all_plots <- ggpairs(redwines, 
-        lower = list(continuous = wrap("points", shape = I('.'))), 
-        upper = list(combo = wrap("box", outlier.shape = I('.'))))
 
-p.fixed.acidity <- grid.arrange(getPlot(all_plots, 2, 13), getPlot(all_plots, 13, 2), top=textGrob('          fixed.acidity', gp=gpar(fontsize=11)))
-p.volatile.acidity <- grid.arrange(getPlot(all_plots, 3, 13), getPlot(all_plots, 13, 3), top=textGrob('         volatile.acidity', gp=gpar(fontsize=11)))
-p.citric.acid <- grid.arrange(getPlot(all_plots, 4, 13), getPlot(all_plots, 13, 4), top=textGrob('        citric.acid', gp=gpar(fontsize=11)))
-p.residual.sugar<- grid.arrange(getPlot(all_plots, 5, 13), getPlot(all_plots, 13, 5), top=textGrob('         residual.sugar', gp=gpar(fontsize=11)))
-p.chlorides <- grid.arrange(getPlot(all_plots, 6, 13), getPlot(all_plots, 13, 6), top=textGrob('         chlorides', gp=gpar(fontsize=11)))
-p.free.sulfur.dioxide <- grid.arrange(getPlot(all_plots, 7, 13), getPlot(all_plots, 13, 7), top=textGrob('         free.sulfur.dioxide', gp=gpar(fontsize=11)))
-p.total.sulfur.dioxide <- grid.arrange(getPlot(all_plots, 8, 13), getPlot(all_plots, 13, 8), top=textGrob('         total.sulfur.dioxide', gp=gpar(fontsize=11)))
-p.density <- grid.arrange(getPlot(all_plots, 9, 13), getPlot(all_plots, 13, 9), top=textGrob('         density', gp=gpar(fontsize=11)))
-p.pH <- grid.arrange(getPlot(all_plots, 10, 13), getPlot(all_plots, 13, 10), top=textGrob('         pH', gp=gpar(fontsize=11)))
-p.sulphates <- grid.arrange(getPlot(all_plots, 11, 13), getPlot(all_plots, 13, 11), top=textGrob('         sulphates', gp=gpar(fontsize=11)))
-p.alcohol <- grid.arrange(getPlot(all_plots, 12, 13), getPlot(all_plots, 13, 12), top=textGrob('         alcohol', gp=gpar(fontsize=11)))
-```
-
-```{r echo=FALSE, message=FALSE, warning=FALSE}
-grid.arrange(p.fixed.acidity, p.volatile.acidity, p.citric.acid, p.residual.sugar, p.chlorides, p.free.sulfur.dioxide, p.total.sulfur.dioxide, p.density, p.pH, p.sulphates, p.alcohol, nrow = 4)
-```
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
 pairs.panels(redwines[2:13])
-```
-
-```{r echo=FALSE, message=FALSE, warning=FALSE}
-#top <- list(getPlot(all_plots, 2, 13), getPlot(all_plots, 3, 13), getPlot(all_plots, 4, 13), getPlot(all_plots, 5, 13), getPlot(all_plots, 6, 13), getPlot(all_plots, 7, 13), getPlot(all_plots, 8, 13), getPlot(all_plots, 9, 13), getPlot(all_plots, 10, 13), getPlot(all_plots, 11, 13), getPlot(all_plots, 12, 13))
-
-#bottom <- list(getPlot(all_plots, 13, 2), getPlot(all_plots, 13, 3), getPlot(all_plots, 13, 4), getPlot(all_plots, 13, 5), getPlot(all_plots, 13, 6), getPlot(all_plots, 13, 7), getPlot(all_plots, 13, 8), getPlot(all_plots, 13, 9), getPlot(all_plots, 13, 10), getPlot(all_plots, 13, 11), getPlot(all_plots, 13, 12))
-
-grid.arrange(getPlot(all_plots, 2, 13), getPlot(all_plots, 3, 13), getPlot(all_plots, 4, 13), getPlot(all_plots, 5, 13), getPlot(all_plots, 6, 13), getPlot(all_plots, 7, 13), getPlot(all_plots, 8, 13), getPlot(all_plots, 9, 13), getPlot(all_plots, 10, 13), getPlot(all_plots, 11, 13), getPlot(all_plots, 12, 13), getPlot(all_plots, 13, 2), getPlot(all_plots, 13, 3), getPlot(all_plots, 13, 4), getPlot(all_plots, 13, 5), getPlot(all_plots, 13, 6), getPlot(all_plots, 13, 7), getPlot(all_plots, 13, 8), getPlot(all_plots, 13, 9), getPlot(all_plots, 13, 10), getPlot(all_plots, 13, 11), getPlot(all_plots, 13, 12),  nrow = 2)
 ```
 
 Taking a look through the data it appears both 'alcohol' and 'volatile.acidity' have the most significant correlation coefficients at 0.476 and -0.391 respectively. Although neither of these are very strong, they may be indicators of what typically lead to higher quality wines.
@@ -132,6 +104,26 @@ Wines that contain high alcohol and low volatile acidity make up ~ 1/3 of the da
 
 Both 'alcohol' and 'volatile.acidity' combined appear to be a decent indicator of high quality wines.
 
+# Correlation with 'alcohol'
+
+From earlier it was found high 'alcohol' coincides with higher 'quality' wines, but what factors influence 'alcohol'?
+
+ 
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+pairs.panels(redwines[9:12])
+```
+
+It turns out the strongest correlation with 'alcohol' is 'density' at -0.50.
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+ggplot(aes(x = alcohol, y = density), data = redwines) +
+  geom_point(alpha = 1/2, aes(color = cut(quality, c(2,5,8)))) +
+  stat_smooth(size = 1, linetype = 2, color = 'black') + 
+  scale_color_manual(values = c('(2,5]' = 'skyblue', '(5,8]' = 'maroon'), name = 'quality', labels = c('low', 'high'))
+```
+
+The graph above details density vs alcohol. Please note the transition from density
+
 
 
 # Additional look into 'density'
@@ -145,7 +137,7 @@ ggplot(aes(x = quality, y = density), data = redwines) +
   scale_x_discrete(limits=c(seq(3,8)))
 ```
 
-A first look at density vs. quality showcases a graph with a very low correlation coefficient of -0.175 and values that appear to range all over the board. 
+A first look at density vs. quality showcases a graph with a low correlation coefficient of -0.175 and values that appear to range all over the board. 
 
 However, it is interesting to note a significant portion of lower quality wines fall within the 1st and 3rd quartiles (represented by the two horizontal black lines). What happens if all data within those quartiles is filtered out?
 
@@ -157,7 +149,7 @@ ggplot(aes(x = quality), data = redwines.filter_density) +
   scale_fill_manual(name = 'quality',
                     values = c('(2,5]' = 'skyblue',
                                  '(5,8]' = 'maroon'),
-                    labels = c('Low', 'High')
+                    labels = c('low', 'high')
                     ) + 
   ggtitle('Wine Quality: High Alcohol, Low Volatile Acids, and Density Filter') +
   scale_x_continuous(breaks=seq(3,8))

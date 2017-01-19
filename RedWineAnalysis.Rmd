@@ -15,7 +15,7 @@ knitr::opts_chunk$set(echo=FALSE, warning=FALSE, message=FALSE)
 
 ```{r}
 setwd('/home/david/Desktop/DataAnalysisProjects/RedWineData')
-redwines <- read.csv('wineQualityReds.csv')
+redwines_full <- read.csv('wineQualityReds.csv')
 library(ggplot2)
 library(GGally)
 library(plyr)
@@ -26,6 +26,102 @@ library(corrplot)
 ```
 
 # Univariate Plots Sections
+
+```{r}
+# Take out count from redwines_full
+redwines <- subset(redwines_full, select = -c(X))
+
+# List structure of redwines
+str(redwines)
+
+# List summary for all variables
+summary(redwines)
+```
+
+The redwines dataset contains 12 variables and approximately 1600 observations.
+
+```{r}
+
+# generates single-variable redwines ggplot
+create_plot <- function(varname) {
+  return(ggplot(aes_string(x = varname), data = redwines))
+}
+
+# creates single-variable histogram
+create_hist <- function(varname, binwidth = .1) {
+  create_plot(varname) + geom_histogram(binwidth = binwidth)
+}
+
+# creates single-variable bar plot
+create_bar <- function(varname, binwidth = .1) {
+  create_plot(varname) + geom_bar()
+}
+```
+
+```{r}
+
+```
+
+```{r}
+create_hist('fixed.acidity')
+```
+
+```{r}
+create_hist('volatile.acidity', 0.01)
+```
+
+```{r}
+create_hist('citric.acid', 0.01)
+```
+
+```{r}
+create_hist('residual.sugar')
+```
+
+```{r}
+create_hist('residual.sugar', .04) + scale_x_log10() + annotation_logticks()
+```
+
+```{r}
+create_hist('chlorides', 0.01)
+```
+
+```{r}
+create_hist('chlorides', 0.01) + scale_x_log10() + annotation_logticks()
+```
+
+```{r}
+create_hist('free.sulfur.dioxide', 2)
+```
+
+```{r}
+create_hist('total.sulfur.dioxide', 5)
+```
+
+```{r}
+create_hist('total.sulfur.dioxide', .1) + scale_x_log10() + annotation_logticks()
+```
+
+```{r}
+create_hist('density', .0005)
+```
+
+```{r}
+create_hist('pH', 0.05)
+```
+
+```{r}
+create_hist('sulphates', 0.05)
+```
+
+```{r}
+create_hist('alcohol')
+```
+
+```{r}
+create_bar('quality')
+```
+
 
 ### Histogram of 'quality'
 ```{r}

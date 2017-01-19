@@ -5,10 +5,16 @@ output: html_document
 
 Which Chemical Properties influence the quality of red wines?
 
-* Wine quality is rated from 1-10. For the purpose of this dataset all wines rated 6 and above are considered 'high quality wines' whereas 5 and below are considered 'low quality wines'.
+* Wine quality is rated from 1-10. For the purpose of this dataset all wines 
+rated 6 and above are considered 'high quality wines' whereas 5 and below are 
+considered 'low quality wines'.
 
-```{r echo=FALSE, message=FALSE, warning=FALSE}
-setwd('C:/Users/Pyrite^3/Desktop/Data Analysist/RedWineData')
+```{r global_options, include=FALSE}
+knitr::opts_chunk$set(echo=FALSE, warning=FALSE, message=FALSE)
+```
+
+```{r}
+setwd('/home/david/Desktop/DataAnalysisProjects/RedWineData')
 redwines <- read.csv('wineQualityReds.csv')
 library(ggplot2)
 library(GGally)
@@ -16,10 +22,13 @@ library(plyr)
 library(gridExtra)
 library(grid)
 library(psych)
+library(corrplot)
 ```
 
-# Histogram of 'quality'
-```{r echo=FALSE, message=FALSE, warning=FALSE}
+# Univariate Plots Sections
+
+### Histogram of 'quality'
+```{r}
 ggplot(aes(x = quality), data = redwines) +
   geom_histogram(bins = 6, color = 'black', aes(fill = cut(quality, c(2,5,8)))) +
   scale_x_continuous(label = seq(3,8), breaks = seq(3,8)) +
@@ -31,20 +40,38 @@ ggplot(aes(x = quality), data = redwines) +
 
 ```
 
-Approximately equal amounts of both high and low quality wines are in the dataset. A significant portion of wines are either a 5 or 6. There are no wines rated below 3 or above 8 with very few wines actually being given a 3 or 8 rating.
+Approximately equal amounts of both high and low quality wines are in the 
+dataset. A significant portion of wines are either a 5 or 6. There are no wines 
+rated below 3 or above 8 with very few wines actually being given a 3 or 8 
+rating.
 
-# All variables versus 'quality'
+# Univariate Analysis
+
+
+# Bivariate Plots
+
+### Correllation Plots
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+redwines_corr <- cor(redwines[2:13])
+corrplot(redwines_corr, type='lower')
+```
+
+### All variables versus 'quality'
 
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
 pairs.panels(redwines[2:13])
 ```
 
-Taking a look through the data it appears both 'alcohol' and 'volatile.acidity' have the most significant correlation coefficients at 0.476 and -0.391 respectively. Although neither of these are very strong, they may be indicators of what typically lead to higher quality wines.
+Taking a look through the data it appears both 'alcohol' and 'volatile.acidity' 
+have the most significant correlation coefficients at 0.476 and -0.391 
+respectively. Although neither of these are very strong, they may be indicators 
+of what typically lead to higher quality wines.
 
 Let's take a further look into both 'alcohol' and 'volatile.acidity':
 
-# Closer Look: 'alcohol' vs 'quality'
+### Closer Look: 'alcohol' vs 'quality'
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
 ggplot(aes(x = quality, y = alcohol), data = redwines) +
   geom_point(alpha = 1/2, aes(color = quality)) +
@@ -52,12 +79,17 @@ ggplot(aes(x = quality, y = alcohol), data = redwines) +
   scale_color_gradient(low = 'skyblue', high = 'maroon')
 ```
 
-The dashed line is median 'alcohol' for the different qualities. Although there is a dip of median 'alcohol' in quality 5 wines the overall trend is higher 'alcohol' leads to higher 'quality'. 'Alcohol' appears to have a positive correlation with 'quality'.
+The dashed line is median 'alcohol' for the different qualities. Although there 
+is a dip of median 'alcohol' in quality 5 wines the overall trend is higher 
+'alcohol' leads to higher 'quality'. 'Alcohol' appears to have a positive 
+correlation with 'quality'.
 
-Note that quality 8 wines are in the upper range of 'alcohol' (between ~10 and ~14) whereas quality 3 wines are in the lower range (between ~8 and ~11) of 'alcohol'. 
+Note that quality 8 wines are in the upper range of 'alcohol' (between ~10 and 
+~14) whereas quality 3 wines are in the lower range (between ~8 and ~11) of 
+'alcohol'. 
 
 
-# Closer Look: 'volatile.acidity' vs 'quality'
+### Closer Look: 'volatile.acidity' vs 'quality'
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
 ggplot(aes(x = quality, y = volatile.acidity), data = redwines) +
   geom_point(alpha = 1/2, aes(color = quality)) +
@@ -65,17 +97,23 @@ ggplot(aes(x = quality, y = volatile.acidity), data = redwines) +
   scale_color_gradient(low = 'skyblue', high = 'maroon')
 ```
 
-Again, the median values for 'quality' are represented by a dashed line. The median value for 'volatile.acidity' tends to steadily decrease with higher quality wines. The median line indicates 'volatile.acidity' has negative correlation versus 'quality'.
+Again, the median values for 'quality' are represented by a dashed line. The 
+median value for 'volatile.acidity' tends to steadily decrease with higher 
+quality wines. The median line indicates 'volatile.acidity' has negative 
+correlation versus 'quality'.
 
-Quality 8 wines are in the lower range of 'volatile.acidity' (between ~.25 to ~.85) whereas quality 3 wines are in the upper range of 'volatile.acidity' (between ~.44 to ~1.6). 
+Quality 8 wines are in the lower range of 'volatile.acidity' (between ~.25 to 
+~.85) whereas quality 3 wines are in the upper range of 'volatile.acidity' 
+(between ~.44 to ~1.6). 
 
 
-# HIGH 'alcohol' and LOW 'volatile.acidity'
+### HIGH 'alcohol' and LOW 'volatile.acidity'
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
-redwines.alc_va_median <- subset(redwines, alcohol >= median(alcohol) & volatile.acidity <= median(volatile.acidity) )
+redwines.alc_va_median <- subset(redwines, alcohol >= median(alcohol) & 
+                                   volatile.acidity <= median(volatile.acidity))
 
 ggplot(aes(x = quality), data = redwines.alc_va_median) +
-  geom_histogram(bins = 5, color = 'black', aes(fill = cut(quality, c(2,5,8)))) +
+  geom_histogram(bins = 5, color = 'black', aes(fill = cut(quality, c(2,5,8))))+
   scale_fill_manual(name = 'quality',
                       values = c('(2,5]' = 'skyblue',
                                  '(5,8]' = 'maroon'),
@@ -83,9 +121,12 @@ ggplot(aes(x = quality), data = redwines.alc_va_median) +
   ggtitle('Wine Quality: High Alcohol and Low Volatile Acids')
 ```
 
-Because high 'alcohol' and low 'volatile.acidity' appear to influence 'quality' the dataset was filtered based on median of these two variables. The following histogram only includes wine with above median 'alcohol' values and below median 'volatile.acidity' values.
+Because high 'alcohol' and low 'volatile.acidity' appear to influence 'quality' 
+the dataset was filtered based on median of these two variables. The following 
+histogram only includes wine with above median 'alcohol' values and below median 'volatile.acidity' values.
 
-No quality 3 wines exist with these parameters. In fact the dataset now contains mostly high quality wines.
+No quality 3 wines exist with these parameters. In fact the dataset now contains
+mostly high quality wines.
 
 Percent wines with HIGH 'alcohol' and LOW 'volatile.acidity':
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
@@ -97,16 +138,20 @@ sum(redwines.alc_va_median$quality >= '3')  / sum(redwines$quality >= '3')
 Percent HIGH 'quality' wines with HIGH 'alcohol' and LOW 'volatile.acidity':
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
 # Percent HIGH 'quality' wines with HIGH 'alcohol' and LOW 'volatile.acidity'
-sum(redwines.alc_va_median$quality >= '6') / sum(redwines.alc_va_median$quality >= '3')
+sum(redwines.alc_va_median$quality >= '6') / sum(redwines.alc_va_median$quality 
+                                                 >= '3')
 ```
 
-Wines that contain high alcohol and low volatile acidity make up ~ 1/3 of the dataset and have an 81% chance to be of high quality. 
+Wines that contain high alcohol and low volatile acidity make up ~ 1/3 of the 
+dataset and have an 81% chance to be of high quality. 
 
-Both 'alcohol' and 'volatile.acidity' combined appear to be a decent indicator of high quality wines.
+Both 'alcohol' and 'volatile.acidity' combined appear to be a decent indicator 
+of high quality wines.
 
-# Correlation with 'alcohol'
+### Correlation with 'alcohol'
 
-From earlier it was found high 'alcohol' coincides with higher 'quality' wines, but what factors influence 'alcohol'?
+From earlier it was found high 'alcohol' coincides with higher 'quality' wines, 
+but what factors influence 'alcohol'?
 
  
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
@@ -119,14 +164,15 @@ It turns out the strongest correlation with 'alcohol' is 'density' at -0.50.
 ggplot(aes(x = alcohol, y = density), data = redwines) +
   geom_point(alpha = 1/2, aes(color = cut(quality, c(2,5,8)))) +
   stat_smooth(size = 1, linetype = 2, color = 'black') + 
-  scale_color_manual(values = c('(2,5]' = 'skyblue', '(5,8]' = 'maroon'), name = 'quality', labels = c('low', 'high'))
+  scale_color_manual(values = c('(2,5]' = 'skyblue', '(5,8]' = 'maroon'), 
+                     name = 'quality', labels = c('low', 'high'))
 ```
 
-The graph above details density vs alcohol. Please note the transition from density
+The graph above details density vs alcohol. 
 
 
 
-# Additional look into 'density'
+### Additional look into 'density'
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
 ggplot(aes(x = quality, y = density), data = redwines) +
   geom_point(alpha = 1/2, aes(color = quality)) +
@@ -137,12 +183,16 @@ ggplot(aes(x = quality, y = density), data = redwines) +
   scale_x_discrete(limits=c(seq(3,8)))
 ```
 
-A first look at density vs. quality showcases a graph with a low correlation coefficient of -0.175 and values that appear to range all over the board. 
+A first look at density vs. quality showcases a graph with a low correlation 
+coefficient of -0.175 and values that appear to range all over the board. 
 
-However, it is interesting to note a significant portion of lower quality wines fall within the 1st and 3rd quartiles (represented by the two horizontal black lines). What happens if all data within those quartiles is filtered out?
+However, it is interesting to note a significant portion of lower quality wines 
+fall within the 1st and 3rd quartiles (represented by the two horizontal black 
+lines). What happens if all data within those quartiles is filtered out?
 
 ``` {r echo=FALSE, message=FALSE, warning=FALSE}
-redwines.filter_density <- subset(redwines, density <= quantile(redwines$density, .25) | density >= quantile(redwines$density, .75))
+redwines.filter_density <- subset(redwines, density <= quantile(
+  redwines$density, .25) | density >= quantile(redwines$density, .75))
 
 ggplot(aes(x = quality), data = redwines.filter_density) +
   geom_histogram(bins = 6,color = 'black', aes(fill = cut(quality, c(2,5,8)))) +
@@ -151,17 +201,25 @@ ggplot(aes(x = quality), data = redwines.filter_density) +
                                  '(5,8]' = 'maroon'),
                     labels = c('low', 'high')
                     ) + 
-  ggtitle('Wine Quality: High Alcohol, Low Volatile Acids, and Density Filter') +
+  ggtitle('Wine Quality: High Alcohol, Low Volatile Acids, and Density Filter')+
   scale_x_continuous(breaks=seq(3,8))
 ```
 
 
-After placing an inner quartile density filter the 'Wine Quality' histogram becomes more skewed towards higher quality (As seen in the histogram above).  
+After placing an inner quartile density filter the 'Wine Quality' histogram 
+becomes more skewed towards higher quality (As seen in the histogram above).  
+
+# Bivariate Analysis
 
 
-# Combine 'density' filter with HIGH 'alcohol' and  LOW 'volatile.acidity'
+
+# Multivariate Plots
+
+### Combine 'density' filter with HIGH 'alcohol' and  LOW 'volatile.acidity'
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
-redwines.alc_va_median_filter_density <- subset(redwines.alc_va_median, density <= quantile(redwines$density, .25) | density >= quantile(redwines$density, .75))
+redwines.alc_va_median_filter_density <- subset(
+  redwines.alc_va_median, density <= quantile(redwines$density, .25) | 
+    density >= quantile(redwines$density, .75))
 
 ggplot(aes(x = quality), data = redwines.alc_va_median_filter_density) +
   geom_histogram(bins = 5,color = 'black', aes(fill = cut(quality, c(2,5,8)))) +
@@ -170,7 +228,7 @@ ggplot(aes(x = quality), data = redwines.alc_va_median_filter_density) +
                                  '(5,8]' = 'maroon'),
                     labels = c('Low', 'High')
                     ) + 
-  ggtitle('Wine Quality: High Alcohol, Low Volatile Acids, and Density Filter') +
+  ggtitle('Wine Quality: High Alcohol, Low Volatile Acids, and Density Filter')+
   scale_x_continuous(breaks=seq(3,8))
 
 
@@ -178,22 +236,33 @@ ggplot(aes(x = quality), data = redwines.alc_va_median_filter_density) +
 
 ```
 
-Filtering out the inner quartile range of density values leaves the dataset with more higher quality wines than lower quality (see histogram). Combining a density filter into the dataset slightly increases the predicibility if a wine is high quality. 
+Filtering out the inner quartile range of density values leaves the dataset with
+more higher quality wines than lower quality (see histogram). Combining a 
+density filter into the dataset slightly increases the predicibility if a wine 
+is high quality. 
 
 Percent wines with HIGH 'alcohol', LOW 'volatile.acidity', and density filter:
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
 # Percent wines with HIGH 'alcohol', LOW 'volatile.acidity', and density filter
-sum(redwines.alc_va_median_filter_density$quality >= '3') / sum(redwines$quality >= '3')
+sum(redwines.alc_va_median_filter_density$quality >= '3') / 
+  sum(redwines$quality >= '3')
 ```
 
-Percent HIGH 'quality' wines with HIGH 'alcohol', LOW 'volatile.acidity', and density filter:
+Percent HIGH 'quality' wines with HIGH 'alcohol', LOW 'volatile.acidity', and 
+density filter:
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
-# Percent HIGH 'quality' wines with HIGH 'alcohol', LOW 'volatile.acidity', and density filter
-sum(redwines.alc_va_median_filter_density$quality >= '6') / sum(redwines.alc_va_median_filter_density$quality >= '3')
+# Percent HIGH 'quality' wines with HIGH 'alcohol', LOW 'volatile.acidity', and 
+# density filter
+sum(redwines.alc_va_median_filter_density$quality >= '6') / 
+  sum(redwines.alc_va_median_filter_density$quality >= '3')
 ```
-Wines that have high alcohol content, low volatile acidity, and contain densities far from the median make up ~ 1/5 of the dataset and have an 86% chance to be rated as a high quality wine.
+Wines that have high alcohol content, low volatile acidity, and contain 
+densities far from the median make up ~ 1/5 of the dataset and have an 86% 
+chance to be rated as a high quality wine.
 
-# Final Plots and Summary
+# Multivariate Analysis
+
+# Final Plots 
 
 
 # Reflection

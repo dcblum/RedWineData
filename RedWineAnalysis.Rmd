@@ -6,8 +6,8 @@ Red Wine Quality Analysis by David Blum
 
 What makes a wine great? Paulo Cortez compiled a dataset consisting of objective
 tests (including pH and chemical composition) and sensory data (taste ratings by
-experts). The goal of is this analysis is to illuminate what chemical and 
-physical properties make wine taste good.
+experts) of over 1500 different red wines. The goal of is this analysis is to 
+illuminate what chemical and physical properties make wine taste good.
 
 
 ```{r global_options, include=FALSE}
@@ -236,8 +236,8 @@ Tranformed data has the same characteristics as the not-transformed graph.
 *binwidth = .01 (transformed)
 
 ```{r}
-create_hist('quality', 1)
-summary(redwines[12])
+ggplot(redwines, aes(quality)) +
+  stat_count()
 ```
 
 The plot for quality is normally distrubuted. The range = [3, 8] with most 
@@ -295,8 +295,9 @@ pairs.panels(redwines.sub)
 
 The correlation coefficients are:
 
-volatile.acidity to quality: -0.39
-alcohol to quality : 0.48
+* volatile.acidity to quality: -0.39
+
+* alcohol to quality : 0.48
 
 Both coefficients showcase a moderate significance to affecting quality.
 
@@ -363,12 +364,11 @@ There doesn't appear to be anything too interesting here. High quality wines
 have somewhat lower pH, but no strong observations can be made.
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
-ggplot(redwines, aes(quality, log10(sulphates))) +
+ggplot(redwines, aes(quality, sulphates)) +
   geom_boxplot()
 ```
 
-The median values of sulphates increase slightly as quality increases. The 
-log10 scale makes the correlation more apparent.
+The median values of sulphates increase slightly as quality increases. 
 
 
 ## Non-Feature Bivarate Plots
@@ -454,42 +454,114 @@ alcohol.
 
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
-ggplot(redwines, aes(volatile.acidity, citric.acid)) +
+ggplot(redwines, aes(sulphates, citric.acid)) +
   geom_point(aes(color = quality)) +
   scale_color_brewer(type='qual')
 ```
 
 There is a very apparent cluster of quality = 7 wines with moderate levels of
-citric.acid and low amounts of volatile.acidity (below .5). Higher tier alcohols
-generally have higher amounts of citric.acid and lower amounts of 
-volatile.acidity.
+citric.acid (.25 and above) in a specific interval of sulphates ([.5, 1.0]). 
 
-```{r echo=FALSE, message=FALSE, warning=FALSE}
-ggplot(redwines, aes(alcohol, citric.acid)) +
-  geom_point(aes(color = quality)) +
-  scale_color_brewer(type='qual')
-```
-
-Higher quality alcohols generally have citric.acid concentraions higher than 
-.25 g/dm^3 and more the 10% alcohol. That region is mostly composed of quality 
-6, 7, and 8. 
 
 # Multivariate Analysis
 
 Wines of high quality tend to follow a few rules:
 
-1) Percent Alcohol above 10%
-2) Volatile Acidity (acetic acid) below .4 g/dm^3
+1) Percent Alcohol above 11%
+2) Volatile Acidity (acetic acid) below .5 g/dm^3
 3) Citric Adid above .25 g/dm^3
+4) Sulphates are between .5 g/dm^3 and 1.0 g/dm^3
 
-It's not a guarentee for wines that meet these specifications will be of high
-quality, however it appears to be a good indicator.
+It's not a guarantee for wines that meet these specifications will be of high
+quality, however it appears to be a good indicator. The range for high quality
+sulphates does not appear to be a strong enough factor for quality.
 
 
 # Final Plots 
 
+```{r}
+ggplot(redwines, aes(quality, fill = quality)) +
+  geom_bar(color = 'black') +
+  ggtitle('Plot One', subtitle = 'Histogram of Quality') +
+  theme(plot.subtitle = element_text(size = 15, hjust = .5)) +
+  scale_fill_brewer(type='qual')
+```
+
+#### Description of Plot 1
+
+Quality is rated on a scale of 0-10, however the only scores that were assigned
+were from 3-8. Most wines are mid quality with few low and high quality wines.
+Any clustering of quality=7 and quality=8 wines is important in analysis.
+
+```{r}
+p1 <- ggplot(redwines, aes(quality, alcohol)) +
+  geom_boxplot(aes(fill = quality)) +
+  scale_fill_brewer(type='qual', palette = 'Accent') +
+  ggtitle('Plot Two', subtitle = 'Alcohol by Quality') +
+  theme(plot.subtitle = element_text(size = 15, hjust = .5))
+
+p2 <- ggplot(redwines, aes(quality, volatile.acidity)) +
+  geom_boxplot(aes(fill = quality)) +
+  scale_fill_brewer(type='qual') +
+  ggtitle('Volatile Acidity by Quality') +
+  theme(plot.title = element_text(size = 15, hjust = .5))
+
+grid.arrange(p1,p2)
+  
+
+```
+
+#### Description of Plot 2
+
+The two most corellated variables (alcohol and volatile.acidity) were compared 
+to quality. Quality has a positive correlation with alcohol and a negative
+correaltion with volatile acidity. 
+
+Most high quality wines exceed 11% alcohol by volume and have below .5 g/dm^3
+of volatile acids (acetic acid).
+
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+ggplot(aes(sulphates, citric.acid), data = redwines) +
+  geom_jitter(aes(color = quality)) +
+  scale_color_brewer(type='qual') +
+  ggtitle('Citric Acid by Volatile Acidity with Quality') +
+  theme(plot.title = element_text(size = 15, hjust = .5))
+```
+
+#### Description of Plot 2
+
+Many of the higher tier alcohols (quality=7 and quality=8) have citric acid 
+citric acid values above .25 and a range of sulphates [.5, 1.0]. 
+
 
 # Reflection
+
+Of the 1599 red wines observed only a few variables have a moderate to slightly
+moderate impact on the quality of a wine. The most impactful variables with 
+their correlation values are:
+
+* alcohol : 0.48
+* volatile.acidity: -0.39
+* sulphates: .25
+* citric.acid: .23
+
+Alcohol is a much stronger indicator for quality than any other variable. Being
+a common variable listed on the label of a wine I wonder if the knowledge of 
+alcohol percentage created bias during the process of wine quality ratings.
+
+
+Generally wines that are highly rated typically follow 4 main guidelines:
+
+1) Percent Alcohol above 11%
+2) Volatile Acidity (acetic acid) below .5 g/dm^3
+3) Sulphates are between .5 g/dm^3 and 1.0 g/dm^3
+4) Citric Adid above .25 g/dm^3
+
+
+There are exceptions for high quality wines that do not all these guidelines, 
+but most good wines have at least a few of these qualities.
+
 
 
 # References

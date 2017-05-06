@@ -100,58 +100,68 @@ create_hist <- function(varname, binwidth = .1) {
 
 ```
 
-*All Univariate Plots created have a binwidth = .1 unless otherwise stated
+*All Univariate Plots created have a binwidth = 0.1 unless otherwise stated
 
 ```{r}
-create_hist('fixed.acidity')
+create_hist('fixed.acidity') + scale_x_continuous(breaks = seq(4,16,by=2))
 summary(redwines[1])
 ```
 
 The plot of fixed.acidity is right-tailed and has range = [4.6, 15.9]. 
-A majority of the data exists on the interval [7.1, 9.2]. 
+A majority of the data exists on the interval [7.1, 9.2] with values above 14
+likely being outliers.
 
 ```{r}
-create_hist('volatile.acidity', 0.02)
+create_hist('volatile.acidity', 0.02) +
+  scale_x_continuous(breaks = seq(.2,1.6,by=.2))
 summary(redwines[2])
 ```
 
 The plot of volatile.acidity is slighty right-tailed and has two peaks.
-It has a range of [.12, 1.58] with most values between [.39, .64]. 
+It has a range of [0.12, 1.58] with most values between [0.39, 0.64]. Values 
+above ~1.1 are likely outliers.
 
-*binwidth = .02
+*binwidth = 0.02
 
 ```{r}
-create_hist('citric.acid', 0.01)
+create_hist('citric.acid', 0.01) +
+  scale_x_continuous(breaks=seq(0,1,by=.2))
 summary(redwines[3])
 ```
 
 The plot of citric.acid showcases many wines contain little to no citric acid,
-however the graph has no visible peak or tail. It has a range = [0, 1].
+however the graph has no visible peak or tail. It has a range = [0, 1] with most
+values between [0.09, 0.42]. Values above 0.6 are likely outliers.
 
 *binwidth = .01
 
 ```{r}
-create_hist('residual.sugar')
-create_hist('residual.sugar', .02) + scale_x_log10() + annotation_logticks()
+create_hist('residual.sugar') +
+  scale_x_continuous(breaks = seq(0,16,by=2))
+create_hist('residual.sugar', .02) + 
+  scale_x_log10(breaks = seq(1,10))
 summary(redwines[4])
 ```
 
-The plot of residual.sugar is right-tailed with one peak. The range = [.9, 15.5]
-with most values appearing to be withing [1.9, 2.6].
+The plot of residual.sugar is right-tailed with one peak. The range = [0.9, 
+15.5] with most values appearing to be withing [1.9, 2.6]. Values above 4 are 
+likely outliers.
 
 Data was transformed to further inspect the peak and tail. The appear to be no
 large change from the initial inspection.
 
-*Transformed data has a binwidth = .02
+*Transformed data has a binwidth = 0.02
 
 ```{r}
 create_hist('chlorides', 0.01)
-create_hist('chlorides', 0.01) + scale_x_log10() + annotation_logticks()
+create_hist('chlorides', 0.01) + 
+  scale_x_log10(breaks = seq(0,.20,by=.04))
 summary(redwines[5])
 ```
 
-The plot for chlorides has one peak and is right-tailed. Range = [.012, .611] 
-with most data values between [.07, .09]. 
+The plot for chlorides has one peak and is right-tailed. Range = [0.012, 0.611] 
+with most data values between [0.07, 0.09]. Values above 0.12 are likely 
+outliers.
 
 Transformed data still showcases 1 peak, however it no longer appears to be 
 right-tailed. There's a apparent even distribution.
@@ -159,8 +169,10 @@ right-tailed. There's a apparent even distribution.
 *binwidth = .01 for both graphs
 
 ```{r}
-create_hist('free.sulfur.dioxide', 1)
-create_hist('free.sulfur.dioxide') + scale_x_log10() + annotation_logticks()
+create_hist('free.sulfur.dioxide', 1) +
+  scale_x_continuous(breaks=seq(0,75,by=15))
+create_hist('free.sulfur.dioxide') + 
+  scale_x_log10(breaks=c(1,2,5,10,20,50,100))
 summary(redwines[6])
 ```
 
@@ -173,8 +185,11 @@ a wide peak with with short tails.
 *binwidth = 1 (not-trandformed)
 
 ```{r}
-create_hist('total.sulfur.dioxide', 5)
-create_hist('total.sulfur.dioxide', .1) + scale_x_log10() + annotation_logticks()
+create_hist('total.sulfur.dioxide', 5) +
+  scale_x_continuous(breaks=seq(0,300,by=50))
+create_hist('total.sulfur.dioxide', .1) + 
+  scale_x_log10(breaks=c(0,10,20,50,100,150))
+
 summary(redwines[7])
 ```
 
@@ -186,7 +201,8 @@ Tranformed data has an apparent normal distribution.
 *binwidth = 1 (not-trandformed)
 
 ```{r}
-create_hist('density', .0005)
+create_hist('density', .0005) +
+  scale_x_continuous(breaks = seq(.99,1.005,by=.0025))
 summary(redwines[8])
 ```
 
@@ -197,7 +213,8 @@ g / cm^3.
 *binwidth = .005
 
 ```{r}
-create_hist('pH', 0.05)
+create_hist('pH', 0.05) +
+  scale_x_continuous(breaks = seq(1,4,by=.25))
 summary(redwines[9])
 ```
 
@@ -208,10 +225,10 @@ most values between [3.21, 3.40].
 
 ```{r}
 create_hist('sulphates', 0.05)
-create_hist('sulphates', 0.05) + scale_x_log10() + annotation_logticks()
+create_hist('sulphates', 0.05) + 
+  scale_x_log10(breaks=seq(.3,1.5,by=.15))
 summary(redwines[10])
 ```
-
 
 The plot for sulphates has one peak and is right-tailed. The range = [.33, 2] 
 with most values between [.55, .73]. 
@@ -222,8 +239,10 @@ right-tailed.
 *binwidth = .05 (not-trandformed) and binwidth = .05 (transformed)
 
 ```{r}
-create_hist('alcohol')
-create_hist('alcohol', .01) + scale_x_log10() + annotation_logticks()
+create_hist('alcohol') + 
+  scale_x_continuous(breaks=seq(8,15))
+create_hist('alcohol', .01) + 
+  scale_x_log10(breaks=seq(8,15)) 
 summary(redwines[11])
 ```
 
@@ -236,7 +255,7 @@ Tranformed data has the same characteristics as the not-transformed graph.
 
 ```{r}
 ggplot(redwines, aes(quality)) +
-  stat_count()
+  stat_count() 
 ```
 
 The plot for quality is normally distrubuted. The range = [3, 8] with most 
@@ -305,14 +324,25 @@ Both coefficients showcase a moderate significance to affecting quality.
 redwines$quality <- as.factor(redwines$quality)
 
 ggplot(redwines, aes(quality, alcohol)) +
-  geom_boxplot()
+  geom_jitter(alpha = .2) +
+  geom_boxplot(alpha = .8, color = 'deepskyblue3') +
+  stat_summary(fun.y = 'mean',
+               geom = 'point',
+               color = 'maroon',
+               shape = 10,
+               size = 3)
 
 ```
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
 ggplot(redwines, aes(quality, volatile.acidity)) +
-  geom_boxplot()
-
+  geom_jitter(alpha = .2) +
+  geom_boxplot(alpha = .8, color = 'deepskyblue3') +
+  stat_summary(fun.y = 'mean',
+               geom = 'point',
+               color = 'maroon',
+               shape = 10,
+               size = 3)
 ```
 
 Neither volatile.acidity or alcohol are strongly correlated with quality, 
@@ -340,14 +370,27 @@ as well as sulphates (quality correlation = .25).
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
 ggplot(redwines, aes(quality, citric.acid)) +
-  geom_boxplot()
+  geom_jitter(alpha = .2) +
+  geom_boxplot(alpha = .8, color = 'deepskyblue3') +
+  stat_summary(fun.y = 'mean',
+               geom = 'point',
+               color = 'maroon',
+               shape = 10,
+               size = 3)
 ```
 
-Higher quality wines generally have higher than .3 g/dm^3 of citric acid. Interesting.
+Higher quality wines generally have higher than ~.3 g/dm^3 of citric acid. 
+Interesting.
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
 ggplot(redwines, aes(quality, density)) +
-  geom_boxplot()
+  geom_jitter(alpha = .2) +
+  geom_boxplot(alpha = .8, color = 'deepskyblue3') +
+  stat_summary(fun.y = 'mean',
+               geom = 'point',
+               color = 'maroon',
+               shape = 10,
+               size = 3)
 ```
 
 Wines with extreme densities (outliers) appear to be mid quality wines. The 
@@ -356,7 +399,13 @@ correlation with alcohol which has a density = ~.789 g/dm^3).
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
 ggplot(redwines, aes(quality, pH)) +
-  geom_boxplot()
+  geom_jitter(alpha = .2) +
+  geom_boxplot(alpha = .8, color = 'deepskyblue3') +
+  stat_summary(fun.y = 'mean',
+               geom = 'point',
+               color = 'maroon',
+               shape = 10,
+               size = 3)
 ```
 
 There doesn't appear to be anything too interesting here. High quality wines 
@@ -364,10 +413,18 @@ have somewhat lower pH, but no strong observations can be made.
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
 ggplot(redwines, aes(quality, sulphates)) +
-  geom_boxplot()
+  ylim(.25, 1.25) +
+  geom_jitter(alpha = .2) +
+  geom_boxplot(alpha = .8, color = 'deepskyblue3') +
+  stat_summary(fun.y = 'mean',
+               geom = 'point',
+               color = 'maroon',
+               shape = 10,
+               size = 3)
 ```
 
-The median values of sulphates increase slightly as quality increases. 
+Values above 1.25 g/dm^3 were removed to better view overall trends. The median 
+values of sulphates increase as quality increases. 
 
 
 ## Non-Feature Bivarate Plots
@@ -431,19 +488,27 @@ show a negative correlation with citric.acid and volatile.acidity (acetic acid).
 # Multivariate Plots
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
-ggplot(aes(y = volatile.acidity, x = alcohol), data = redwines) +
-  geom_jitter(aes(color = quality)) +
-  scale_color_brewer(type='qual')
+ggplot(aes(x = alcohol,
+           y = volatile.acidity,
+           color = quality),
+       data = redwines) +
+  geom_jitter() +
+  geom_smooth(se = FALSE, method = 'lm') +
+  scale_color_brewer(type='seq', palette = 'BuPu')
 ```
 
 High quality wines (quality = 7 or 8) generally have low volatile.acidity (below
 .5) and high amounts of alcohol (above 10%). It appears much of the quality = 5 
-wines have very low alcohol and a high range of volatile acidity.
+wines have very low alcohol and a high range of volatile acidity.  
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
-ggplot(redwines, aes(alcohol, density)) +
-  geom_point(aes(color = quality)) +
-  scale_color_brewer(type='qual')
+ggplot(aes(x = alcohol,
+           y = density,
+           color = quality),
+       data = redwines) +
+  geom_jitter() +
+  geom_smooth(se = FALSE, method = 'lm') +
+  scale_color_brewer(type='seq', palette = 'BuPu')
 ```
 
 High quality wines appear to range all across the scale with most quality >= 6 
@@ -453,13 +518,19 @@ alcohol.
 
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
-ggplot(redwines, aes(sulphates, citric.acid)) +
-  geom_point(aes(color = quality)) +
-  scale_color_brewer(type='qual')
+ggplot(aes(x = sulphates,
+           y = citric.acid,
+           color = quality),
+       data = redwines) +
+  geom_jitter() +
+  geom_smooth(se = FALSE, method = 'lm') +
+  scale_color_brewer(type='seq', palette = 'BuPu')
 ```
 
-There is a very apparent cluster of quality = 7 wines with moderate levels of
+There is a very apparent cluster of high quality wines with moderate levels of
 citric.acid (.25 and above) in a specific interval of sulphates ([.5, 1.0]). 
+Unlike the other trend lines quality=8 wines do have a negative correlation,
+however I believe this is do to a clustering of quality wines. 
 
 
 # Multivariate Analysis
@@ -479,63 +550,102 @@ sulphates does not appear to be a strong enough factor for quality.
 # Final Plots 
 
 ```{r}
-ggplot(redwines, aes(quality, fill = quality)) +
+ggplot(redwines, aes(quality)) +
   geom_bar(color = 'black') +
   ggtitle('Plot One', subtitle = 'Histogram of Quality') +
-  theme(plot.subtitle = element_text(size = 15, hjust = .5)) +
-  scale_fill_brewer(type='qual')
+  labs(x='Quality', y='Count') +
+  theme(plot.subtitle = element_text(size = 15, hjust = .5))
 ```
 
 #### Description of Plot 1
 
-Quality is rated on a scale of 0-10, however the only scores that were assigned
-were from 3-8. Most wines are mid quality with few low and high quality wines.
-Any clustering of quality=7 and quality=8 wines is important in analysis.
+Quality is rated on a scale of 0-10 by wine experts, however the only scores 
+assigned were 3-8. Most wines are mid quality (~1300) with very few low quality 
+(~70) and high quality (~220) wines. 
+
+Because of such a low count any clustering of high quality (7 or 8) or low 
+quality (3 or 4) wines is important for analysis.
+
 
 ```{r}
 p1 <- ggplot(redwines, aes(quality, alcohol)) +
-  geom_boxplot(aes(fill = quality)) +
-  scale_fill_brewer(type='qual', palette = 'Accent') +
+  geom_jitter(alpha = .2) +
+  geom_boxplot(alpha = .8, color = 'deepskyblue3') +
+  stat_summary(fun.y = 'mean',
+               geom = 'point',
+               color = 'maroon',
+               shape = 10,
+               size = 3) +
   ggtitle('Plot Two', subtitle = 'Alcohol by Quality') +
-  theme(plot.subtitle = element_text(size = 15, hjust = .5))
+  labs(x = 'Quality (Score from 0-10)', y = 'Alcohol (%)') +
+  theme(plot.subtitle = element_text(size = 13, hjust = .5))
 
 p2 <- ggplot(redwines, aes(quality, volatile.acidity)) +
-  geom_boxplot(aes(fill = quality)) +
-  scale_fill_brewer(type='qual') +
+  geom_jitter(alpha = .2) +
+  geom_boxplot(alpha = .8, color = 'deepskyblue3') +
+  stat_summary(fun.y = 'mean',
+               geom = 'point',
+               color = 'maroon',
+               shape = 10,
+               size = 3) +
   ggtitle('Volatile Acidity by Quality') +
-  theme(plot.title = element_text(size = 15, hjust = .5))
+  labs(x = 'Quality (Score from 0-10)', y = 'Volatile Acidity (g/dm^3)') +
+  theme(plot.title = element_text(size = 13, hjust = .5))
 
 grid.arrange(p1,p2)
   
 
 ```
 
+
 #### Description of Plot 2
 
 The two most corellated variables (alcohol and volatile.acidity) were compared 
-to quality. Quality has a positive correlation with alcohol and a negative
-correaltion with volatile acidity. 
+to quality. 
 
-Most high quality wines exceed 11% alcohol by volume and have below .5 g/dm^3
-of volatile acids (acetic acid).
+Quality has a positive correlation with alcohol. Most high quality wines exceed 
+~11% alcohol by volume and most low quality wines (3, 4, and 5) do not
+exceed 12% (which is the average for quality=8 wines).
+
+Quality has a negative correaltion with volatile acidity. Usual values of 
+volatile acidity for low quality wines [0.6, 1.0] g/dm^3 are considered to be 
+outliers for high quality wines. High quality wines generally have volatile 
+acidity values < 0.5 g/dm^3.
+
+Important points from Plot 2 are that most high quality wines: 
+
+1) Exceed 11% alcohol by volume 
+2) Have below 0.5 g/dm^3 of volatile acids (acetic acid).
 
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
-ggplot(aes(sulphates, citric.acid), data = redwines) +
-  geom_jitter(aes(color = quality)) +
-  scale_color_brewer(type='qual') +
-  ggtitle('Plot Three', subtitle = 'Citric Acid by Volatile Acidity with 
-          Quality') +
-  theme(plot.subtitle = element_text(size = 15, hjust = .5))
+ggplot(aes(x = sulphates,
+           y = citric.acid,
+           color = quality),
+       data = redwines) +
+  geom_jitter() +
+  geom_smooth(se = FALSE, method = 'lm') +
+  scale_color_brewer(type='seq', palette = 'BuPu') +
+  ggtitle('Plot Three', subtitle = 'Cluster of Quality') +
+  labs(x = 'Sulphates (g/dm^3)', y = 'Citric Acid (g/dm^3)') +
+  theme(plot.subtitle = element_text(size = 13, hjust = .5))
 ```
 
 #### Description of Plot 3
 
-Many of the higher tier alcohols (quality=7 and quality=8) have citric acid 
-citric acid values above .25 and a range of sulphates [.5, 1.0]. 
+Many of the higher tier alcohols (quality=7 and quality=8) are clustered around 
+citric acid values > 0.25 g/dm^3 and have a range of sulphates [0.5, 1.0]. 
+
+There are high a few high quality wines that have lower citric acid values, 
+however they share citric acid values with a large amount of lower quality 
+wines.
+
+I believe the reason for a negative trend line for quality=8 wines is due 
+clustering and should be ignored.
 
 
-# Reflection
+
+# Reflexion
 
 Of the 1599 red wines observed only a few variables have a moderate to slightly
 moderate impact on the quality of a wine. The most impactful variables with 
@@ -556,14 +666,23 @@ alcohol percentage created bias during the process of wine quality ratings.
 Generally wines that are highly rated typically follow 4 main attributes (ranked 
 highest first):
 
-1) Percent Alcohol above 11%
-2) Volatile Acidity (acetic acid) below .5 g/dm^3
-3) Sulphates are between .5 g/dm^3 and 1.0 g/dm^3
-4) Citric Adid above .25 g/dm^3
-
+1) Alcohol above 11% by volume
+2) Volatile Acidity (acetic acid) below 0.5 g/dm^3
+3) Sulphates with a range of [0.5, 1.0] g/dm^3
+4) Citric Adid above 0.25 g/dm^3
 
 There are exceptions for high quality wines that do not adhere to these 
-guidelines, but most good wines have at least a few of these qualities. 
+guidelines but most good wines follow at least a few. 
+
+The biggest difficulties for this data set are not having a range of wines 
+representing the full scale they were based on (0-10). It would be interesting
+to have data related to what makes a wine a perfect 0 or perfect 10.
+
+I attribute my understanding of this dataset by making a series of univariate, 
+bivariate, and multivariate plots alongside the corellation coeficients plot.
+This visual information essentially guided the analysis in a way where I didn't 
+feel I had to guess where to go next. I would argue the data was explored _at_ 
+me.
 
 To investigate this data further I would also like to know the age and average 
 price of the wine. Age is typically a factor used to sell wine at a more 
